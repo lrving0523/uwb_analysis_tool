@@ -346,39 +346,3 @@ J6/J7 给出了解释和蒙特卡洛校验。
 
 代码采用 [MIT License](LICENSE)。数据和实验记录归原作者所有，使用前请确认授权。
 
-## 14. 上传到 GitHub
-
-首次上传：
-
-```bash
-cd uwb_mocap_analysis
-
-git init
-git add .
-git commit -m "Initial commit: UWB ranging and localization evaluation with mocap ground truth"
-git branch -M main
-
-# 先在 GitHub 网页新建一个空仓库（不要勾选 README / .gitignore）
-git remote add origin https://github.com/<your-name>/<repo-name>.git
-git push -u origin main
-```
-
-说明：
-
-- 仓库约 9 MB（含 5 份原始 CSV 与 32 张图），远低于 GitHub 单文件 100 MB 限制，无需 Git LFS；
-- `.gitignore` 已排除 `__pycache__/`、`.pytest_cache/` 等缓存；若不想提交数据或结果，
-  取消其中 `data/raw/`、`results/` 的注释即可；
-- 首次 `git commit` 若提示未配置身份：
-
-```bash
-git config --global user.name  "Your Name"
-git config --global user.email "you@example.com"
-```
-
-后续更新：
-
-```bash
-git add .
-git commit -m "Update analysis"
-git push
-```
