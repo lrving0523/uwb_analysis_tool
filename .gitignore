@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# 运行/测试产生的临时目录
+.pytest-tmp/
+pytest-cache-files-*/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 若不想把数据或结果提交到仓库，取消下面两行注释
+data/raw/
+results/
+github.md

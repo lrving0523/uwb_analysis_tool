@@ -1,0 +1,28 @@
+{
+  "adjacent_distances_m": [
+    0.8,
+    0.8,
+    0.8,
+    0.8
+  ],
+  "diagonal_distances_m": [
+    1.1313708498984762,
+    1.1313708498984762
+  ],
+  "expected_side_m": 0.8,
+  "expected_diagonal_m": 1.1314,
+  "max_adjacent_error_m": 0.0,
+  "max_diagonal_error_m": 2.915010152371167e-05,
+  "planarity_z_spread_m": 0.0,
+  "signed_area_xy_m2": -0.6400000000000001,
+  "clockwise_xy": true,
+  "centroid_m": [
+    -0.0465964637696743,
+    0.3302038013935089,
+    0.0655231997370719
+  ],
+  "side_ok": true,
+  "diagonal_ok": true,
+  "planar_ok": true,
+  "ok": true
+}

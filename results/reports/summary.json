@@ -1,0 +1,200 @@
+{
+  "dataset": {
+    "n_uwb": 607,
+    "duration_s": 60.60016393661499
+  },
+  "geometry": {
+    "adjacent_distances_m": [
+      0.8,
+      0.8,
+      0.8,
+      0.8
+    ],
+    "diagonal_distances_m": [
+      1.1313708498984762,
+      1.1313708498984762
+    ],
+    "expected_side_m": 0.8,
+    "expected_diagonal_m": 1.1314,
+    "max_adjacent_error_m": 0.0,
+    "max_diagonal_error_m": 2.915010152371167e-05,
+    "planarity_z_spread_m": 0.0,
+    "signed_area_xy_m2": -0.6400000000000001,
+    "clockwise_xy": true,
+    "centroid_m": [
+      -0.0465964637696743,
+      0.3302038013935089,
+      0.0655231997370719
+    ],
+    "side_ok": true,
+    "diagonal_ok": true,
+    "planar_ok": true,
+    "ok": true
+  },
+  "mapping": {
+    "identity_order": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "identity_mae_m": 0.170086154230058,
+    "best_permutation": [
+      3,
+      1,
+      2,
+      0
+    ],
+    "best_mae_m": 0.16363484576314477,
+    "identity_is_best": false,
+    "improvement_m": 0.006451308466913219
+  },
+  "ranging": {
+    "n_valid": 2428,
+    "bias_m": -0.1259713524410066,
+    "mae_m": 0.170086154230058,
+    "rmse_m": 0.21390218920838747,
+    "std_m": 0.1728738410295916,
+    "max_abs_m": 3.5810699620146655,
+    "p95_abs_m": 0.3495030362041495
+  },
+  "localization": {
+    "x": {
+      "n": 607,
+      "rmse_m": 1.6853,
+      "mae_m": 1.1468,
+      "bias_m": -1.0828,
+      "std_m": 1.2914,
+      "max_abs_m": 2.9388,
+      "p95_abs_m": 2.7995
+    },
+    "y": {
+      "n": 607,
+      "rmse_m": 0.3027,
+      "mae_m": 0.2603,
+      "bias_m": -0.2568,
+      "std_m": 0.1602,
+      "max_abs_m": 0.9182,
+      "p95_abs_m": 0.6039
+    },
+    "z": {
+      "n": 607,
+      "rmse_m": 0.2409,
+      "mae_m": 0.2259,
+      "bias_m": 0.162,
+      "std_m": 0.1783,
+      "max_abs_m": 0.5648,
+      "p95_abs_m": 0.3878
+    },
+    "xy": {
+      "n": 607,
+      "rmse_m": 1.7123,
+      "mae_m": 1.2284,
+      "bias_m": 1.2284,
+      "std_m": 1.1929,
+      "max_abs_m": 2.9634,
+      "p95_abs_m": 2.8174
+    },
+    "3d": {
+      "n": 607,
+      "rmse_m": 1.7291,
+      "mae_m": 1.2845,
+      "bias_m": 1.2845,
+      "std_m": 1.1575,
+      "max_abs_m": 2.9748,
+      "p95_abs_m": 2.8292
+    }
+  },
+  "scale_diagnostic": {
+    "x": {
+      "slope_k": 0.3785,
+      "intercept_b_m": -0.0181,
+      "r2": 0.9881,
+      "implied_scale_1_over_k": 2.6422,
+      "corr": 0.994
+    },
+    "y": {
+      "slope_k": 0.3496,
+      "intercept_b_m": 0.151,
+      "r2": 0.3803,
+      "implied_scale_1_over_k": 2.8606,
+      "corr": 0.6166
+    },
+    "z": {
+      "slope_k": 1.011,
+      "intercept_b_m": -0.1657,
+      "r2": 0.3839,
+      "implied_scale_1_over_k": 0.9891,
+      "corr": 0.6196
+    }
+  },
+  "quality": {
+    "sampling": {
+      "n": 607,
+      "duration_s": 60.60016393661499,
+      "rate_hz": 10.000176432861336,
+      "dt_median_s": 0.09999823570251465,
+      "dt_mean_s": 0.10000027052246697,
+      "dt_p95_s": 0.10022628307342529,
+      "dt_max_s": 0.10173273086547852,
+      "dt_min_s": 0.0982663631439209,
+      "dt_std_s": 0.00020392754323142261,
+      "n_dt_gt_2x_median": 0
+    },
+    "gaps": {
+      "count": 0
+    },
+    "position_jumps": {
+      "threshold_m": 0.3,
+      "count": 30
+    },
+    "stuck": {
+      "segments": 0
+    },
+    "eop": {
+      "mean": [
+        0.1695,
+        0.1698,
+        1.2308
+      ],
+      "std": [
+        0.2701,
+        0.2709,
+        1.263
+      ],
+      "max": [
+        2.55,
+        2.55,
+        2.55
+      ],
+      "zero_ratio": 0.039538714991762765,
+      "n_unique_rows": 147
+    },
+    "z": {
+      "z_bias_m": 0.16195023813685608,
+      "z_mae_m": 0.2258545221920027,
+      "z_rmse_m": 0.24089215368955014,
+      "z_max_abs_m": 0.5648196371506307,
+      "frac_abs_gt_0p5": 0.018121911037891267,
+      "stuck_segments": 1,
+      "stuck_ratio": 0.40691927512355847,
+      "eop_z_mean": 1.230790751548929,
+      "corr_eop_z_err": -0.2050058750176753
+    },
+    "valid_time_ratio": 1.0,
+    "valid_range_ratio": 1.0
+  },
+  "dop": {
+    "hdop_median": 1.338577135035004,
+    "vdop_median": 4.481926212655264,
+    "gdop_median": 4.595199369350238
+  },
+  "dop_verification": {
+    "cond_HtH_start": 10309.453979787035,
+    "vdop_start": 52.4099377478324,
+    "vdop_min": 0.6779201482070264,
+    "mc_std_z_start": 0.26528445831970265,
+    "linear_pred_start": 2.6204968873916203
+  },
+  "report": "D:\\lee\\tools\\uwb_mocap_analysis\\results\\reports\\analysis_report.md"
+}

@@ -1,0 +1,2 @@
+n_uwb,n_uav,duration_s,uwb_rate_hz,uav_rate_hz,platform_center_x,platform_center_y,platform_center_z,landing_offset_m,valid_time_ratio
+607,7289,60.600000,10.000000,117.315000,-0.046596,0.330204,0.065523,0.096455,1.000000

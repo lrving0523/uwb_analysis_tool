@@ -1,0 +1,55 @@
+project:
+  name: uwb_mocap_analysis
+  bag: yolo_detection_mono_time_ubuntu_17138_631826629921771954
+  description: 基于动捕真值的 UWB 四基站测距与三维定位精度评估
+  notes: >
+    简化模型：忽略 TAG 安装偏移；无人机与平台姿态一致；平台静止；
+    UWB→MAVROS 使用已知轴映射 x_M=y_U, y_M=-x_U, z_M=-z_U；
+    不做任何配准、尺度修正或姿态标定。
+
+data:
+  raw_dir: data/raw
+  files:
+    uwb: uwb_tagframe0.csv
+    uav: uav_mocap.csv
+    platform: platform_mocap.csv
+    local: px4_local_position.csv
+    setpoint: px4_setpoint_position.csv
+
+geometry:
+  side_m: 0.8
+  anchors_uwb:            # A0→A3，平台局部 UWB 坐标系（X 右、Y 前、Z 上）
+    - [-0.4, -0.4, 0.0]
+    - [-0.4,  0.4, 0.0]
+    - [ 0.4,  0.4, 0.0]
+    - [ 0.4, -0.4, 0.0]
+  uwb_to_mavros:          # p_M = A · p_U
+    - [0.0,  1.0, 0.0]
+    - [-1.0, 0.0, 0.0]
+    - [0.0,  0.0, -1.0]
+  expected_adjacent_m: 0.8
+  expected_diagonal_m: 1.1314
+
+time:
+  source: bag_time_sec
+  max_gap_s: 0.5
+  min_overlap_s: 10.0
+
+quality:
+  range_min_m: 0.05
+  range_max_m: 20.0
+  range_jump_m: 0.5
+  pos_jump_m: 0.30
+  stuck_min_run: 10
+  gap_threshold_s: 0.5
+
+metrics:
+  percentile: 95.0
+
+plots:
+  dpi: 300
+  formats: [png, pdf]
+  style: [science, ieee, no-latex]
+
+output:
+  results_dir: results
