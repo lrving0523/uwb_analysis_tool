@@ -97,8 +97,8 @@ uwb_mocap_analysis/
 - numpy / pandas / scipy / matplotlib / SciencePlots / PyYAML / pytest
 
 ```bash
-git clone https://github.com/<your-name>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/lrving0523/uwb_analysis_tool.git
+cd uwb_analysis_tool
 
 # 方式一：conda
 conda create -n uwb-mocap python=3.10 -y
@@ -297,9 +297,6 @@ Z 轴 k = 1.011（正常）。米级 RMSE 主要来自该失配，而非随机�
 **几何**：HDOP 中位 1.34，VDOP 中位 4.48，PDOP 中位 4.60；四基站共面导致垂直几何条件差。
 
 **数据质量**：10.00 Hz、无丢包；位置跳变 30 次；Z 轴固定值占 40.7%；EOP 含义待确认。
-
-![R1](results/figures/ranging/R1_ranges_vs_truth.png)
-![J5](results/figures/joint/J5_geometry_dop.png)
 
 ## 11. 测试
 
