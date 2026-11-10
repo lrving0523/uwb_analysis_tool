@@ -17,7 +17,16 @@ from src import anchor_geometry as geom
 from src.coordinate_transform import uwb_to_mavros
 from src.time_alignment import interp_with_validity, overlap_window, sampling_stats
 
-SIM_TIME_CANDIDATES = ("bag_time_sec", "relative_time_sec", "timestamp", "time")
+SIM_TIME_CANDIDATES = (
+    "bag_time_sec",
+    "rosbag_time_sec",
+    "bag_time_s",
+    "relative_time_sec",
+    "time_from_segment_start_s",
+    "t_rel_bag_start_s",
+    "timestamp",
+    "time",
+)
 
 
 def _t_col(df: pd.DataFrame) -> str:
@@ -37,10 +46,20 @@ def _clean(df: pd.DataFrame, t_col: str) -> pd.DataFrame:
 
 
 def load_config(path: str | Path) -> dict:
+    """读取 YAML 配置；工程根目录通过向上查找 ``configs/`` 目录确定。
+
+    支持配置放在 ``configs/`` 子目录中（例如 ``configs/flight_takeoff_landing/*.yaml``）。
+    """
     path = Path(path).resolve()
     with path.open("r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    root = path.parents[1]
+
+    root = path.parent
+    while root != root.parent and not (root / "configs").is_dir():
+        root = root.parent
+    if not (root / "configs").is_dir():  # 兜底：退回到 configs 的上一级
+        root = path.parents[1]
+
     cfg["_root"] = str(root)
     cfg["_config_path"] = str(path)
     return cfg

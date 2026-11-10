@@ -134,7 +134,9 @@ pip install -r requirements.txt
 
 - 动捕类：`bag_time_sec`、`pose.position.x/y/z`（`header.frame_id` 可选）
 - UWB：`bag_time_sec`（或 `relative_time_sec`）、`pos_3d[0..2]`、`eop_3d[0..2]`、`dis_arr[0..3]`
-- 时间列优先 `bag_time_sec`（秒）；动捕与 UWB 必须能落到同一时间轴。
+- 时间列优先 `bag_time_sec`（秒）；若导出工具使用其它列名，脚本会自动识别
+  `rosbag_time_sec`、`bag_time_s`、`relative_time_sec`、`time_from_segment_start_s`、`t_rel_bag_start_s`、`timestamp`；
+  动捕与 UWB 必须能落到同一时间轴。
 
 **坐标系与几何约定**：
 
@@ -166,6 +168,65 @@ python scripts/analyze_uwb_quality.py   --config configs/config.yaml   # 数据�
 python scripts/analyze_joint_errors.py  --config configs/config.yaml   # 联合分析 + J1–J7
 python scripts/verify_dop.py            --config configs/config.yaml   # DOP 校验 + J6
 ```
+
+### 多架次批量分析
+
+仓库自带一组起飞–降落架次（`15068 / 17394 / 19037 / 20074`），每个架次一个子目录：
+
+```text
+data/flight_takeoff_landing/<id>/*.csv
+configs/flight_takeoff_landing/<id>.yaml     # 每个架次一份配置
+```
+
+一条命令跑完全部架次并生成汇总：
+
+```bash
+python scripts/batch_flights.py
+```
+
+输出：
+
+```text
+results/flight_takeoff_landing/
+├── 15068/ 17394/ 19037/ 20074/     # 每架次完整的 figures / tables / reports
+├── summary.csv  summary.md  summary.json
+└── comparison_ranging_localization.png/.pdf   # 架次间对比柱状图
+```
+
+单架次调试时直接指定配置即可：
+
+```bash
+python scripts/batch_analysis.py --config configs/flight_takeoff_landing/15068.yaml
+```
+
+新增一批数据时，可先用脚本批量生成配置（要求每个架次一个子目录、文件名固定）：
+
+```bash
+python scripts/make_flight_configs.py \
+    --data-dir data/vision_csv \
+    --config-dir configs/vision_csv \
+    --results-dir results/vision_csv \
+    --name vision_csv
+python scripts/batch_flights.py --config-dir configs/vision_csv --out results/vision_csv
+```
+
+### 基站偏置标定
+
+用一段原地悬停/垂直起降数据（真值位置几乎不变、高度可覆盖工作区间）标定各基站的测距偏置：
+
+```bash
+python scripts/calibrate_bias.py --config configs/batch3_csv/11510.yaml
+# 可选：检查标定结果能否迁移到其它架次
+python scripts/calibrate_bias.py --config configs/batch3_csv/11510.yaml --apply "configs/flight_takeoff_landing/*.yaml"
+```
+
+输出 `results/calibration/`：
+
+- `anchor_bias.csv`：每站的常数偏置、随高度的线性模型 `b(z)=a+c·z` 及拟合残差；
+- `calibration.md`：分段验证（前半段拟合、后半段验证）与迁移性检查；
+- `bias_calibration.png/.pdf`：偏置-高度散点与校正前后 CDF。
+
+> 偏置是**架次相关**的：同一批数据内可迁移，跨批次套用会变差，因此每段飞行最好单独用悬停段标定。
 
 ## 7. 配置说明
 
@@ -218,6 +279,7 @@ results/
 |---|---|
 | `R1_ranges_vs_truth` | 四站实测距离 vs 动捕真值 |
 | `P5_compare_xyz` | UWB vs 真值三轴对比（可直接看出尺度问题） |
+| `P6_compare_xy` | 水平轨迹对比，含四基站、平台边框、平台中心与双方落点 |
 | `Q3_height_timeline` | 高度异常统一时间轴（UWB z / 真值 / EOP / 测距误差 / z 误差） |
 | `J5_geometry_dop` | 水平 HDOP、垂直 VDOP、三维 PDOP 三子图 |
 | `J6_dop_validation` | 线性 DOP 与蒙特卡洛的对比 |

@@ -1,0 +1,67 @@
+project:
+  name: batch3_csv
+  bag: batch3_csv_30437_REVIEW
+  description: UWB 测距与三维定位精度评估
+  notes: '简化模型：忽略 TAG 安装偏移；无人机与平台姿态一致；平台静止； UWB→MAVROS 使用已知轴映射 x_M=y_U, y_M=-x_U,
+    z_M=-z_U； 不做任何配准、尺度修正或姿态标定。
+
+    '
+data:
+  raw_dir: data/batch3_csv/30437_REVIEW
+  files:
+    uwb: nlink_linktrack_tagframe0.csv
+    uav: mavros__vision_pose__pose.csv
+    platform: natnet_ros__ljp__pose.csv
+    local: mavros__local_position__pose.csv
+    setpoint: mavros__setpoint_position__local.csv
+geometry:
+  side_m: 0.8
+  anchors_uwb:
+  - - -0.4
+    - -0.4
+    - 0.0
+  - - -0.4
+    - 0.4
+    - 0.0
+  - - 0.4
+    - 0.4
+    - 0.0
+  - - 0.4
+    - -0.4
+    - 0.0
+  uwb_to_mavros:
+  - - 0.0
+    - 1.0
+    - 0.0
+  - - -1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - -1.0
+  expected_adjacent_m: 0.8
+  expected_diagonal_m: 1.1314
+time:
+  source: bag_time_sec
+  max_gap_s: 0.5
+  min_overlap_s: 10.0
+quality:
+  range_min_m: 0.05
+  range_max_m: 20.0
+  range_jump_m: 0.5
+  pos_jump_m: 0.3
+  stuck_min_run: 10
+  gap_threshold_s: 0.5
+metrics:
+  percentile: 95.0
+plots:
+  dpi: 300
+  formats:
+  - png
+  - pdf
+  style:
+  - science
+  - ieee
+  - no-latex
+output:
+  results_dir: results/batch3_csv/30437_REVIEW

@@ -234,6 +234,11 @@ def run(cfg: dict) -> dict:
         "dataset": {"n_uwb": ds.n, "duration_s": float(ds.t[-1] - ds.t[0])},
         "geometry": insp["geometry"],
         "mapping": insp["mapping"],
+        "inspection": {
+            "landing_offset_m": float(insp["summary"]["landing_offset_m"]),
+            "platform_std_max_m": float(max(insp["summary"]["platform_std_m"])),
+            "same_world_frame": bool(insp["summary"]["same_world_frame"]),
+        },
         "ranging": rang["aggregate"],
         "localization": loc["stats"].set_index("component").round(4).to_dict(orient="index"),
         "scale_diagnostic": loc["diag"].set_index("axis").round(4).to_dict(orient="index"),

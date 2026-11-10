@@ -46,16 +46,60 @@ def p2_mavros_xyz(ds, out: Path) -> list[Path]:
                     labels={"uwb": "UWB (MAVROS frame)"}, colors={"uwb": COLORS["uwb"]})
 
 
+def _platform_2d(ax, ds, label_anchors: bool = True, label_center: bool = True) -> None:
+    """在 XY 图上画 0.8 m 平台边框、四基站与平台中心（相对平台中心坐标）。"""
+    a = ds.anchors_world - ds.p0
+    corners = np.vstack([a[[0, 1, 2, 3]], a[0]])
+    ax.plot(corners[:, 0], corners[:, 1], color="k", lw=0.6, ls="--", zorder=1)
+    for i in range(4):
+        ax.plot(a[i, 0], a[i, 1], marker="s", ms=5.5, color=ps.ANCHOR_COLORS[i],
+                mec="k", mew=0.3, ls="none", zorder=6)
+        if label_anchors:
+            # 固定几何下 A0/A1 在上、A2/A3 在下；标签朝平台外侧偏移避免压住落点
+            offsets = {0: (4, -11), 1: (-16, -11), 2: (-16, 4), 3: (4, 4)}
+            dx_pt, dy_pt = offsets.get(i, (4, -10))
+            ax.annotate(f"A{i}", (a[i, 0], a[i, 1]), xytext=(dx_pt, dy_pt),
+                        textcoords="offset points", fontsize=6.5,
+                        color=ps.ANCHOR_COLORS[i], zorder=7)
+    ax.plot(0.0, 0.0, marker="+", ms=9, color="k", mew=0.9, ls="none", zorder=7,
+            label="platform centre" if label_center else None)
+
+
+def _platform_3d(ax, ds) -> None:
+    """在 3D 图上画平台边框、四基站与平台中心（相对平台中心坐标）。"""
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+    a = ds.anchors_world - ds.p0
+    corners = np.vstack([a[[0, 1, 2, 3]], a[0]])
+    ax.plot(corners[:, 0], corners[:, 1], corners[:, 2], color="k", lw=0.6, ls="--")
+    ax.add_collection3d(Poly3DCollection([a[[0, 1, 2, 3]]], alpha=0.10,
+                                         facecolor="grey", edgecolor="none"))
+    for i in range(4):
+        ax.scatter([a[i, 0]], [a[i, 1]], [a[i, 2]], marker="s", s=20,
+                   color=ps.ANCHOR_COLORS[i], edgecolors="k", linewidths=0.3)
+        ax.text(a[i, 0], a[i, 1], a[i, 2] + 0.04, f"A{i}", fontsize=6.5,
+                color=ps.ANCHOR_COLORS[i])
+    ax.scatter([0.0], [0.0], [0.0], marker="+", s=50, color="k", linewidths=0.8)
+
+
 def p3_xy(ds, out: Path) -> list[Path]:
-    h = ps.aspect_height(ps.SINGLE_COLUMN_IN, np.ptp(ds.uwb_mav[:, 0]),
-                         np.ptp(ds.uwb_mav[:, 1]), extra=0.9)
+    a_rel = ds.anchors_world - ds.p0
+    pts = np.vstack([ds.uwb_mav[:, :2], a_rel[:, :2], np.zeros((1, 2))])
+    h = ps.aspect_height(ps.SINGLE_COLUMN_IN, np.ptp(pts[:, 0]),
+                         np.ptp(pts[:, 1]), extra=0.9)
     fig, ax = ps.new_figure(1, 1, width="single", height=h)
-    ax.plot(ds.uwb_mav[:, 0], ds.uwb_mav[:, 1], color=COLORS["uwb"], lw=0.9)
-    ax.plot(ds.uwb_mav[0, 0], ds.uwb_mav[0, 1], marker="o", ms=4,
-            mfc=COLORS["a2"], mec="k", mew=0.3, ls="none")
+    _platform_2d(ax, ds)
+    ax.plot(ds.uwb_mav[:, 0], ds.uwb_mav[:, 1], color=COLORS["uwb"], lw=0.9,
+            label="UWB trajectory")
+    ax.plot(ds.uwb_mav[0, 0], ds.uwb_mav[0, 1], marker="o", ms=4.5,
+            mfc=COLORS["a2"], mec="k", mew=0.3, ls="none", label="Start", zorder=8)
+    ax.plot(ds.uwb_mav[-1, 0], ds.uwb_mav[-1, 1], marker="D", ms=4.5,
+            mfc=COLORS["a1"], mec="k", mew=0.3, ls="none", label="UWB landing", zorder=8)
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel(r"$x_M$ (m)")
     ax.set_ylabel(r"$y_M$ (m)")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2, fontsize=6,
+              frameon=False, handletextpad=0.3, columnspacing=1.0)
     return ps.save_figure(fig, out / "P3_uwb_xy")
 
 
@@ -83,18 +127,42 @@ def p5_compare_xyz(ds, out: Path) -> list[Path]:
 
 
 def p6_compare_xy(ds, out: Path) -> list[Path]:
-    pts = np.vstack([ds.truth_rel[:, :2], ds.uwb_mav[:, :2]])
+    a_rel = ds.anchors_world - ds.p0
+    pts = np.vstack([ds.truth_rel[:, :2], ds.uwb_mav[:, :2],
+                     a_rel[:, :2], np.zeros((1, 2))])
     h = ps.aspect_height(ps.SINGLE_COLUMN_IN, np.ptp(pts[:, 0]),
                          np.ptp(pts[:, 1]), extra=0.9)
     fig, ax = ps.new_figure(1, 1, width="single", height=h)
+    _platform_2d(ax, ds)
     ax.plot(ds.truth_rel[:, 0], ds.truth_rel[:, 1], color=COLORS["truth"], lw=1.0,
             label="Ground truth")
     ax.plot(ds.uwb_mav[:, 0], ds.uwb_mav[:, 1], color=COLORS["uwb"], lw=0.9,
             ls=(0, (4, 2)), label="UWB")
+
+    # 落点：真值 vs UWB（坐标已相对平台中心）
+    gt_end = ds.truth_rel[-1, :2]
+    uwb_end = ds.uwb_mav[-1, :2]
+    ax.plot(*gt_end, marker="o", ms=5, mfc=COLORS["truth"], mec="k", mew=0.3,
+            ls="none", zorder=9, label="GT landing")
+    ax.plot(*uwb_end, marker="D", ms=5, mfc=COLORS["uwb"], mec="k", mew=0.3,
+            ls="none", zorder=9, label="UWB landing")
+    ax.annotate("", xy=gt_end, xytext=(0.0, 0.0),
+                arrowprops=dict(arrowstyle="-", color=COLORS["truth"], lw=0.7, ls=":"))
+    ax.annotate("", xy=uwb_end, xytext=(0.0, 0.0),
+                arrowprops=dict(arrowstyle="-", color=COLORS["uwb"], lw=0.7, ls=":"))
+
+    d_gt = float(np.linalg.norm(gt_end))
+    d_uwb = float(np.linalg.norm(uwb_end))
+    ax.text(0.02, 0.02,
+            f"landing offset\nGT  {d_gt:.2f} m\nUWB {d_uwb:.2f} m",
+            transform=ax.transAxes, va="bottom", ha="left", fontsize=6.5,
+            bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="0.7", lw=0.4))
+
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel(r"$x_M$ (m)")
     ax.set_ylabel(r"$y_M$ (m)")
-    ax.legend(loc="best", fontsize=7)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2,
+              fontsize=6, frameon=False, handletextpad=0.3, columnspacing=1.0)
     return ps.save_figure(fig, out / "P6_compare_xy")
 
 
@@ -105,14 +173,22 @@ def p7_compare_3d(ds, out: Path) -> list[Path]:
             color=COLORS["truth"], lw=0.9, label="Ground truth")
     ax.plot(ds.uwb_mav[:, 0], ds.uwb_mav[:, 1], ds.uwb_mav[:, 2],
             color=COLORS["uwb"], lw=0.8, ls=(0, (3, 2)), label="UWB")
-    ps.set_equal_3d(ax, np.vstack([ds.truth_rel, ds.uwb_mav]))
+    _platform_3d(ax, ds)
+    ax.scatter([ds.truth_rel[-1, 0]], [ds.truth_rel[-1, 1]], [ds.truth_rel[-1, 2]],
+               marker="o", s=28, color=COLORS["truth"], edgecolors="k",
+               linewidths=0.3, label="GT landing")
+    ax.scatter([ds.uwb_mav[-1, 0]], [ds.uwb_mav[-1, 1]], [ds.uwb_mav[-1, 2]],
+               marker="D", s=24, color=COLORS["uwb"], edgecolors="k",
+               linewidths=0.3, label="UWB landing")
+    ps.set_equal_3d(ax, np.vstack([ds.truth_rel, ds.uwb_mav,
+                                   ds.anchors_world - ds.p0, np.zeros((1, 3))]))
     ax.view_init(26, -60)
     ax.set_xlabel(r"$x_M$ (m)", labelpad=1)
     ax.set_ylabel(r"$y_M$ (m)", labelpad=1)
     ax.set_zlabel(r"$z_M$ (m)", labelpad=1)
     ax.tick_params(labelsize=7, pad=1)
     ps.style_3d(ax)
-    ax.legend(loc="upper left", fontsize=7)
+    ax.legend(loc="upper left", fontsize=6.2, frameon=False, handletextpad=0.3)
     return ps.save_figure(fig, out / "P7_compare_3d")
 
 
